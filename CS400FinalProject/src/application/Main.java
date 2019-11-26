@@ -6,6 +6,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -21,7 +22,6 @@ public class Main extends Application {
   @Override
   public void start(Stage primaryStage) {
     try {
-
       /**
        * Create controls
        */
@@ -38,8 +38,6 @@ public class Main extends Application {
 
       // two options for gender (male or female)
       ObservableList<String> gender = FXCollections.observableArrayList("", "Male", "Female");
-
-      // TODO options for race
 
       // options for legislative body
       ObservableList<String> body = FXCollections.observableArrayList("", "House", "Senate");
@@ -81,40 +79,61 @@ public class Main extends Application {
       // create a button for generating a random legislator
       Button randomLegislatorButton = new Button();
       randomLegislatorButton.setText("Generate Random Legislator");
+      
+      Button searchButton = new Button("Search");
+      
+      
+      Button metricsButton = new Button("Metrics");
 
       /**
        * Create layouts to house controls
        */
 
-      // use a BorderPane layout (top, bottom, left, right, center)
+      // use a BorderPane layout (top, bottom, left, right, center) for search scene
       BorderPane root = new BorderPane();
       HBox topPane = new HBox(5);
       GridPane centerGrid = new GridPane();
       HBox bottomPane = new HBox(5);
 
 
-
-      // add controls to the layouts
+      // add controls to the layouts for searchScene
       topPane.getChildren().addAll(bodyBox, stateBox, partyBox, tenureBox, genderBox, electionBox);
       bottomPane.getChildren().addAll(averageLegislatorButton, randomLegislatorButton);
 
-      // add the inner layouts to the BorderPane
+      // add the inner layouts to the BorderPane for searchScene
       root.setTop(topPane);
       topPane.setAlignment(Pos.TOP_CENTER);
+      
+      
       // BorderPane.setMargin(topPane, new Insets(0, 0, 0, 50));
       root.setBottom(bottomPane);
       bottomPane.setAlignment(Pos.BASELINE_CENTER);
       root.setCenter(centerGrid);
       centerGrid.setAlignment(Pos.CENTER);
 
+      
+      // use a VBox for main scene
+      VBox mainLayout = new VBox(10);
+      mainLayout.setAlignment(Pos.CENTER);
+      
+      // add buttons to the main layout
+      mainLayout.getChildren().addAll(searchButton, metricsButton);
+      
+      
+      // create scenes
+      Scene searchScene = new Scene(root, 700, 400);
+      Scene mainScene = new Scene(mainLayout, 700, 400);
 
-      // create scene
-      Scene scene = new Scene(root, 700, 400);
-      scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-
+      searchScene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+      mainScene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+      
+      searchButton.setOnAction(e -> primaryStage.setScene(searchScene));
+      
       // add the scene to the stage
-      primaryStage.setScene(scene);
+      primaryStage.setScene(mainScene);
       primaryStage.setTitle("Representation Tracker");
+
+
       // update the taskbar icon
       primaryStage.getIcons()
           .add(new Image(this.getClass().getResourceAsStream("capitolLogo.jpg")));

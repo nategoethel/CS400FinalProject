@@ -10,4 +10,9 @@ public class MetricScene extends Scene {
     // TODO Auto-generated constructor stub
   }
 
+ 
+  Scene getScene() {
+    
+    return this;
+  }
 }
