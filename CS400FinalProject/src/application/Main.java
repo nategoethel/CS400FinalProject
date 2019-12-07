@@ -24,11 +24,14 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 public class Main extends Application {
   @Override
   public void start(Stage primaryStage) {
     try {
+
+
       /**
        * Create controls
        */
@@ -86,10 +89,22 @@ public class Main extends Application {
       Button searchButton = new Button("Search Congress");
       Tooltip searchTip = new Tooltip("Search Congress based on certain criteria");
       searchButton.setTooltip(searchTip);
-
+      
+      // create clear button
       Button clearButton = new Button("Clear");
-
+      
+      // create back button
       Button backButton = new Button("Back");
+
+      // create save button
+      Button saveButton = new Button();
+      Tooltip saveTip = new Tooltip("Save search to CSV file");
+      saveButton.setTooltip(saveTip);
+      Image saveImage = new Image(this.getClass().getResourceAsStream("floppyDiscIcon.png"));
+      ImageView saveImageView = new ImageView(saveImage);
+      saveImageView.setFitHeight(20);
+      saveImageView.setFitWidth(20);
+      saveButton.setGraphic(saveImageView);
 
       /**
        * Create layouts to house controls
@@ -105,7 +120,7 @@ public class Main extends Application {
       // add controls to the layouts for searchScene
       topPane.getChildren().addAll(bodyLabel, bodyBox, stateLabel, stateBox, partyLabel, partyBox,
           genderLabel, genderBox, clearButton, backButton);
-      bottomPane.getChildren().addAll(addLegislator, removeLegislator);
+      bottomPane.getChildren().addAll(addLegislator, removeLegislator, saveButton);
 
       // add the inner layouts to the BorderPane for searchScene
       root.setTop(topPane);
@@ -142,6 +157,7 @@ public class Main extends Application {
       mainScene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
       mainLayout.setBackground(mainBackground);
 
+      // set actions for buttons
       searchButton.setOnAction(e -> primaryStage.setScene(searchScene));
       backButton.setOnAction(e -> primaryStage.setScene(mainScene));
 
@@ -153,7 +169,7 @@ public class Main extends Application {
         public void handle(ActionEvent event) {
           // get the list of nodes from the pane
           List<Node> nodes = topPane.getChildren();
-          
+
           // for each ComboBox in the pane, clear the selection
           for (Node node : nodes) {
             if (node instanceof ComboBox) {
@@ -163,8 +179,8 @@ public class Main extends Application {
         }
 
       };
-      
-      
+
+
       clearButton.setOnAction(clearAction);
 
       // add the scene to the stage

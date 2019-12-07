@@ -9,7 +9,7 @@ import java.util.List;
  *
  * @param <T> node type
  */
-public interface BTreeADT<T> {
+public interface BTreeADT<K, V> {
 
   /**
    * Add a given node to the tree
@@ -17,7 +17,7 @@ public interface BTreeADT<T> {
    * @param node the node to add
    * @throws IllegalArgumentException
    */
-  public void addNode(T node) throws IllegalArgumentException;
+  public void addNode(K key, V value) throws IllegalArgumentException;
 
   /**
    * Remove a given node from the tree
@@ -25,7 +25,7 @@ public interface BTreeADT<T> {
    * @param node
    * @throws IllegalArgumentException
    */
-  public void removeNode(T node) throws IllegalArgumentException;
+  public void removeNode(K key) throws IllegalArgumentException;
 
   /**
    * Search for a given node in the tree
@@ -34,12 +34,5 @@ public interface BTreeADT<T> {
    * @throws IllegalArgumentException
    * @return the node if found, null otherwise
    */
-  public T search(T node) throws IllegalArgumentException;
-
-  /**
-   * In order traversal of the tree
-   * 
-   * @return a list of all of the nodes
-   */
-  public List<T> getAllNodes();
+  public V search(K key, V value) throws IllegalArgumentException;
 }
