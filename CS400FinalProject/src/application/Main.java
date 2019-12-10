@@ -22,6 +22,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -93,6 +94,9 @@ public class Main extends Application {
       // create clear button
       Button clearButton = new Button("Clear");
       
+      // create submit button
+      Button submitButton = new Button("Submit");
+      
       // create back button
       Button backButton = new Button("Back");
 
@@ -113,13 +117,13 @@ public class Main extends Application {
       // use a BorderPane layout (top, bottom, left, right, center) for search scene
       BorderPane root = new BorderPane();
       HBox topPane = new HBox(5);
-      GridPane centerGrid = new GridPane();
+      ListView centerList = new ListView();
       HBox bottomPane = new HBox(5);
 
 
       // add controls to the layouts for searchScene
       topPane.getChildren().addAll(bodyLabel, bodyBox, stateLabel, stateBox, partyLabel, partyBox,
-          genderLabel, genderBox, clearButton, backButton);
+          genderLabel, genderBox, submitButton, clearButton, backButton);
       bottomPane.getChildren().addAll(addLegislator, removeLegislator, saveButton);
 
       // add the inner layouts to the BorderPane for searchScene
@@ -130,8 +134,8 @@ public class Main extends Application {
       // BorderPane.setMargin(topPane, new Insets(0, 0, 0, 50));
       root.setBottom(bottomPane);
       bottomPane.setAlignment(Pos.BASELINE_CENTER);
-      root.setCenter(centerGrid);
-      centerGrid.setAlignment(Pos.CENTER);
+      root.setCenter(centerList);
+      //FIXME remove centerList.setAlignment(Pos.CENTER);
 
 
       // use a VBox for main scene

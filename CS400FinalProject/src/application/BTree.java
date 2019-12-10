@@ -276,6 +276,16 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
 
       return keys;
     }
+    
+    public List<Pair> getChildren(){
+      ArrayList<Pair> children = new ArrayList<Pair>();
+      
+      children.add(this.leftPair);
+      children.add(this.midPair);
+      children.add(this.getRightPair());
+      
+      return children;
+    }
   }
 
   // inner class for key value pairs
@@ -344,29 +354,15 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
     removeKey(root, key);
   }
 
-  /**
-   * Finds the pair with a given key
-   * 
-   * @param key
-   * @return
-   * @throws IllegalArgumentException
-   */
-  @Override
-  public V search(K key) throws IllegalArgumentException {
-
-    return null;
-    // TODO Auto-generated method stub
-
-  }
 
   /**
    * Returns a list of all of the objects in the tree.
    * 
    * @return
    */
-  public List<BTreeNode> getAllValues() {
-    // TODO Auto-generated method stub
-    return null;
+  public List<V> getAllValues() {
+    List<V> valueList = new ArrayList<V>();
+    return getAllValues(root, valueList);
   }
 
   public int getSize() {
@@ -1206,6 +1202,46 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
 
     return false;
   }
+  
+  private List<V> getAllValues(BTreeNode current, List<V> valueList){
+    
+    
+    if (current != null) {
+      if (current.getNumChildren() == 1) {
+        getAllValues(current.getLeftChild(), valueList);
+      } else if (current.getNumChildren() == 2) {
+        getAllValues(current.getMidLeftChild(), valueList);
+        for (Pair p : current.getChildren()) {
+          if (p != null) {
+            valueList.add(p.getValue());
+          }
+        }
+        getAllValues(current.getLeftChild(), valueList);
+      } else if (current.getNumChildren() == 3) {
+        getAllValues(current.getMidRightChild(), valueList);
+        for (Pair p : current.getChildren()) {
+          if (p != null) {
+            valueList.add(p.getValue());
+          }
+        }
+        getAllValues(current.getMidLeftChild(), valueList);
+        getAllValues(current.getLeftChild(), valueList);
+      } else {
+        getAllValues(current.getRightChild(), valueList);
+        getAllValues(current.getMidRightChild(), valueList);
+        for (Pair p : current.getChildren()) {
+          if (p != null) {
+            valueList.add(p.getValue());
+          }
+        }
+        getAllValues(current.getMidLeftChild(), valueList);
+        getAllValues(current.getLeftChild(), valueList);
+      }
+    }
+    
+    
+    return valueList;
+  }
 
   public static void main(String[] args) {
     BTree<Integer, String> tree = new BTree<Integer, String>();
@@ -1233,6 +1269,8 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
     tree.removeKey(15);
     // tree.removeKey(11);
     tree.printSideways();
+    
+    System.out.println(tree.getAllValues());
 
   }
 }

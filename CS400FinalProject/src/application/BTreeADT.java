@@ -34,7 +34,7 @@ public interface BTreeADT<K, V> {
    * @throws IllegalArgumentException
    * @return the node if found, null otherwise
    */
-  public V search(K key) throws IllegalArgumentException;
+  public List<V> getAllValues() throws IllegalArgumentException;
   
 
 }

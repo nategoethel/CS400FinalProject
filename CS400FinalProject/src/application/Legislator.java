@@ -12,7 +12,8 @@ public class Legislator {
   private String lastName;
   private String state;
   private String party;
-  private String gender;
+  private String body;
+  
 
   // constructor
   public Legislator() {
@@ -20,16 +21,18 @@ public class Legislator {
     this.lastName = null;
     this.state = null;
     this.party = null;
-    this.gender = null;
+    this.body = null;
+    
   }
 
   // overloaded constructor
-  public Legislator(String firstName, String lastName, String state, String party, String gender) {
+  public Legislator(String firstName, String lastName, String state, String party, String body) {
     this.firstName = firstName;
     this.lastName = lastName;
     this.state = state;
     this.party = party;
-    this.gender = gender;
+    this.body = body;
+    
   }
 
   // getters and setters
@@ -104,24 +107,6 @@ public class Legislator {
    */
   public void setParty(String party) {
     this.party = party;
-  }
-
-  /**
-   * TODO
-   * 
-   * @return
-   */
-  public String getGender() {
-    return gender;
-  }
-
-  /**
-   * TODO
-   * 
-   * @param gender
-   */
-  public void setGender(String gender) {
-    this.gender = gender;
   }
 
 }
