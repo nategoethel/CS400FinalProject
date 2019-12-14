@@ -1,5 +1,31 @@
 package application;
 
+//////////////////// ALL ASSIGNMENTS INCLUDE THIS SECTION /////////////////////
+//
+// Title: Representation Tracker
+// Files:BTree.java, BTreeADT.java, Congress.java, CongressTests.java,
+// Legislator.java, Main.java
+//
+// Course: CS400, Fall 2019
+//
+// Author: Nate Goethel
+// Email: ngoethel@wisc.edu
+// Lecturer's Name: Andrew Kuemmel
+//
+///////////////////////////// CREDIT OUTSIDE HELP /////////////////////////////
+//
+// Students who get help from sources other than their partner must fully
+// acknowledge and credit those sources of help here. Instructors and TAs do
+// not need to be credited here, but tutors, friends, relatives, room mates,
+// strangers, and others do. If you received no outside help from either type
+// of source, then please explicitly indicate NONE.
+//
+// Persons: NONE
+//
+// Online Sources: https://stackify.com/streams-guide-java-8/ - stream help
+//
+/////////////////////////////// 80 COLUMNS WIDE ///////////////////////////////
+
 /**
  * Represents a member of Congress
  * 
@@ -13,26 +39,33 @@ public class Legislator {
   private String state;
   private String party;
   private String body;
-  
+  private String gender;
+  private String fullName;
+
 
   // constructor
   public Legislator() {
-    this.firstName = null;
-    this.lastName = null;
-    this.state = null;
-    this.party = null;
-    this.body = null;
-    
+    this.firstName = "";
+    this.lastName = "";
+    this.state = "";
+    this.party = "";
+    this.body = "";
+    this.gender = "";
+    this.fullName = this.firstName + " " + this.lastName;
+
   }
 
   // overloaded constructor
-  public Legislator(String firstName, String lastName, String state, String party, String body) {
+  public Legislator(String firstName, String lastName, String gender, String state, String party,
+      String body) {
     this.firstName = firstName;
     this.lastName = lastName;
+    this.gender = gender;
     this.state = state;
     this.party = party;
     this.body = body;
-    
+    this.fullName = this.firstName + " " + this.lastName;
+
   }
 
   // getters and setters
@@ -73,6 +106,25 @@ public class Legislator {
     this.lastName = lastName;
   }
 
+  public String getFullName() {
+    return this.fullName;
+  }
+  /**
+   * 
+   * @return
+   */
+  public String getGender() {
+    return this.gender;
+  }
+
+  /**
+   * 
+   * @param gender
+   */
+  public void setGender(String gender) {
+    this.gender = gender;
+  }
+
   /**
    * TODO
    * 
@@ -107,6 +159,22 @@ public class Legislator {
    */
   public void setParty(String party) {
     this.party = party;
+  }
+
+  /**
+   * 
+   * @return
+   */
+  public String getBody() {
+    return this.body;
+  }
+
+  /**
+   * 
+   * @param body
+   */
+  public void setBody(String body) {
+    this.body = body;
   }
 
 }
