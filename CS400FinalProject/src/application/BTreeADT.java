@@ -25,7 +25,7 @@ public interface BTreeADT<K, V> {
    * @param node
    * @throws IllegalArgumentException
    */
-  public void removeKey(K key) throws IllegalArgumentException;
+  public void removeKey(K key) throws IllegalArgumentException, KeyNotFoundException;
 
   /**
    * Search for a given node in the tree
@@ -34,7 +34,7 @@ public interface BTreeADT<K, V> {
    * @throws IllegalArgumentException
    * @return the node if found, null otherwise
    */
-  public List<V> getAllValues() throws IllegalArgumentException;
+  public List<V> getAllValues();
   
 
 }

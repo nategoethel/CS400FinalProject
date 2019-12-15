@@ -98,7 +98,6 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
         this.midLeftChild.parent = this;
       }
 
-      // TODO need to set parent here?
       this.setLeftPair(P);
       this.numKeys = 1;
     }
@@ -109,6 +108,10 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
 
     public void addNumKeys() {
       this.numKeys++;
+    }
+    
+    public void removeNumKeys() {
+      this.numKeys--;
     }
 
     public int getNumChildren() {
@@ -276,14 +279,14 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
 
       return keys;
     }
-    
-    public List<Pair> getChildren(){
+
+    public List<Pair> getChildren() {
       ArrayList<Pair> children = new ArrayList<Pair>();
-      
+
       children.add(this.leftPair);
       children.add(this.midPair);
       children.add(this.getRightPair());
-      
+
       return children;
     }
   }
@@ -338,80 +341,16 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
    */
   @Override
   public void addKey(K key, V value) throws IllegalArgumentException {
-    // TODO Auto-generated method stub
+
+    if (key == null) {
+      throw new IllegalArgumentException();
+    }
+
     root = addKey(root, key, value);
     while (root.parent != null) {
       root = root.parent;
     }
 
-  }
-
-  /**
-   * Removes a key/value pair from the tree
-   */
-  @Override
-  public void removeKey(K key) throws IllegalArgumentException {
-    removeKey(root, key);
-  }
-
-
-  /**
-   * Returns a list of all of the objects in the tree.
-   * 
-   * @return
-   */
-  public List<V> getAllValues() {
-    List<V> valueList = new ArrayList<V>();
-    return getAllValues(root, valueList);
-  }
-
-  public int getSize() {
-    return size;
-  }
-
-
-  public int getNumKeys() {
-    return numKeysTree;
-  }
-
-  /**
-   * source: Building Java Programs, 4thEd., by Reges and Stepp, Ch. 17
-   * 
-   * Prints the tree sideways
-   */
-  public void printSideways() {
-    System.out.println("------------------------------------------");
-    printSideways(this.root, "");
-    System.out.println("------------------------------------------");
-  }
-
-  /**
-   * private recursive helper method for printSideways() above.
-   * 
-   * @param current the node to print from
-   * @param indent
-   */
-  private void printSideways(BTreeNode current, String indent) {
-    if (current != null) {
-      if (current.getNumChildren() == 1) {
-        printSideways(current.getLeftChild(), indent + "    ");
-      } else if (current.getNumChildren() == 2) {
-        printSideways(current.getMidLeftChild(), indent + "    ");
-        System.out.println(indent + current.getKeys());
-        printSideways(current.getLeftChild(), indent + "    ");
-      } else if (current.getNumChildren() == 3) {
-        printSideways(current.getMidRightChild(), indent + "    ");
-        System.out.println(indent + current.getKeys());
-        printSideways(current.getMidLeftChild(), indent + "    ");
-        printSideways(current.getLeftChild(), indent + "    ");
-      } else {
-        printSideways(current.getRightChild(), indent + "    ");
-        printSideways(current.getMidRightChild(), indent + "    ");
-        System.out.println(indent + current.getKeys());
-        printSideways(current.getMidLeftChild(), indent + "    ");
-        printSideways(current.getLeftChild(), indent + "    ");
-      }
-    }
   }
 
   /**
@@ -465,6 +404,239 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
       addKeyLeaf(current, key, value);
     }
     return current;
+  }
+
+  /**
+   * Removes a key/value pair from the tree
+   */
+  @Override
+  public void removeKey(K key) throws IllegalArgumentException, KeyNotFoundException {
+
+    if (key == null) {
+      throw new IllegalArgumentException();
+    }
+    
+    if (contains(key) == false) {
+      throw new KeyNotFoundException();
+    }
+
+    removeKey(root, key);
+  
+  }
+
+
+  /**
+   * Recursively find the node to remove
+   * 
+   * @param node the node to start searching from
+   * @param key  the key to search for
+   * @return the
+   */
+  private boolean removeKey(BTreeNode node, K key) {
+
+    if (node == null) {
+      return false;
+    }
+
+    if (root.isLeaf() && root.getNumKeys() == 1 && root.containsKey(key)) {
+      root = null;
+      numKeysTree--;
+      return true;
+    }
+
+
+    // preemptive merge
+    if (node.getNumKeys() == 1 && node.equals(root) == false) {
+      node = BTreeMerge(node);
+    }
+
+    int keyIndex = getKeyIndex(node, key);
+
+    // if the key isn't in the node, keep recurring down the tree
+    if (keyIndex == -1) {
+      if (key.compareTo(node.leftPair.getKey()) < 0) { // go to left child
+        return removeKey(node.getLeftChild(), key);
+
+        // go to the middle left child
+      } else if (node.getMidPair() == null || key.compareTo(node.getMidPair().getKey()) < 0) {
+        return removeKey(node.getMidLeftChild(), key);
+
+        // go to the middle right child
+      } else if (node.getRightPair() == null || key.compareTo(node.getRightPair().getKey()) < 0) {
+        return removeKey(node.getMidRightChild(), key);
+
+      } else { // go to right child
+        return removeKey(node.getRightChild(), key);
+      }
+    } else {
+      if (node.isLeaf()) {
+        removeKeyFromIndex(node, keyIndex);
+        node.removeNumKeys();
+        return true;
+      } else {
+        BTreeNode tmpChild = getChild(node, keyIndex + 1);
+        Pair tmpKey = getMinKey(tmpChild);
+        try {
+          removeKey(tmpKey.getKey());
+        } catch (IllegalArgumentException | KeyNotFoundException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        keySwapPair(root, find(root, key), tmpKey);
+        return true;
+      }
+
+    }
+  }
+
+  public boolean contains(K key) {
+    List<K> keyList = this.getAllKeys();
+    
+    if (keyList.contains(key)) {
+      return true;
+    }
+    
+    return false;
+  }
+  
+  /**
+   * Returns a list of all of the objects in the tree.
+   * 
+   * @return
+   */
+  public List<V> getAllValues() {
+    List<V> valueList = new ArrayList<V>();
+    return getAllValues(root, valueList);
+  }
+
+  private List<V> getAllValues(BTreeNode current, List<V> valueList) {
+
+
+    if (current != null) {
+      if (current.getNumChildren() == 1) {
+        getAllValues(current.getLeftChild(), valueList);
+      } else if (current.getNumChildren() == 2) {
+        getAllValues(current.getMidLeftChild(), valueList);
+        for (Pair p : current.getChildren()) {
+          if (p != null) {
+            valueList.add(p.getValue());
+          }
+        }
+        getAllValues(current.getLeftChild(), valueList);
+      } else if (current.getNumChildren() == 3) {
+        getAllValues(current.getMidRightChild(), valueList);
+        for (Pair p : current.getChildren()) {
+          if (p != null) {
+            valueList.add(p.getValue());
+          }
+        }
+        getAllValues(current.getMidLeftChild(), valueList);
+        getAllValues(current.getLeftChild(), valueList);
+      } else {
+        getAllValues(current.getRightChild(), valueList);
+        getAllValues(current.getMidRightChild(), valueList);
+        for (Pair p : current.getChildren()) {
+          if (p != null) {
+            valueList.add(p.getValue());
+          }
+        }
+        getAllValues(current.getMidLeftChild(), valueList);
+        getAllValues(current.getLeftChild(), valueList);
+      }
+    }
+
+
+    return valueList;
+  }
+
+  public List<K> getAllKeys() {
+    List<K> keyList = new ArrayList<K>();
+    return getAllKeys(root, keyList);
+  }
+
+  private List<K> getAllKeys(BTreeNode current, List<K> keyList) {
+    if (current != null) {
+      if (current.getNumChildren() == 1) {
+        getAllKeys(current.getLeftChild(), keyList);
+      } else if (current.getNumChildren() == 2) {
+        getAllKeys(current.getMidLeftChild(), keyList);
+        for (Pair p : current.getChildren()) {
+          if (p != null) {
+            keyList.add(p.getKey());
+          }
+        }
+        getAllKeys(current.getLeftChild(), keyList);
+      } else if (current.getNumChildren() == 3) {
+        getAllKeys(current.getMidRightChild(), keyList);
+        for (Pair p : current.getChildren()) {
+          if (p != null) {
+            keyList.add(p.getKey());
+          }
+        }
+        getAllKeys(current.getMidLeftChild(), keyList);
+        getAllKeys(current.getLeftChild(), keyList);
+      } else {
+        getAllKeys(current.getRightChild(), keyList);
+        getAllKeys(current.getMidRightChild(), keyList);
+        for (Pair p : current.getChildren()) {
+          if (p != null) {
+            keyList.add(p.getKey());
+          }
+        }
+        getAllKeys(current.getMidLeftChild(), keyList);
+        getAllKeys(current.getLeftChild(), keyList);
+      }
+    }
+    return keyList;
+  }
+
+  /**
+   * Find the number of keys in the tree
+   * 
+   * @return
+   */
+  public int getNumKeys() {
+    return numKeysTree;
+  }
+
+  /**
+   * source: Building Java Programs, 4thEd., by Reges and Stepp, Ch. 17
+   * 
+   * Prints the tree sideways
+   */
+  public void printSideways() {
+    System.out.println("------------------------------------------");
+    printSideways(this.root, "");
+    System.out.println("------------------------------------------");
+  }
+
+  /**
+   * private recursive helper method for printSideways() above.
+   * 
+   * @param current the node to print from
+   * @param indent
+   */
+  private void printSideways(BTreeNode current, String indent) {
+    if (current != null) {
+      if (current.getNumChildren() == 1) {
+        printSideways(current.getLeftChild(), indent + "    ");
+      } else if (current.getNumChildren() == 2) {
+        printSideways(current.getMidLeftChild(), indent + "    ");
+        System.out.println(indent + current.getKeys());
+        printSideways(current.getLeftChild(), indent + "    ");
+      } else if (current.getNumChildren() == 3) {
+        printSideways(current.getMidRightChild(), indent + "    ");
+        System.out.println(indent + current.getKeys());
+        printSideways(current.getMidLeftChild(), indent + "    ");
+        printSideways(current.getLeftChild(), indent + "    ");
+      } else {
+        printSideways(current.getRightChild(), indent + "    ");
+        printSideways(current.getMidRightChild(), indent + "    ");
+        System.out.println(indent + current.getKeys());
+        printSideways(current.getMidLeftChild(), indent + "    ");
+        printSideways(current.getLeftChild(), indent + "    ");
+      }
+    }
   }
 
   private BTreeNode addKeyLeaf(BTreeNode current, K key, V value) {
@@ -551,63 +723,6 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
       parent.setMidRightChild(leftChild);
     }
 
-  }
-
-  /**
-   * Recursively find the node to remove
-   * 
-   * @param node the node to start searching from
-   * @param key  the key to search for
-   * @return the
-   */
-  private boolean removeKey(BTreeNode node, K key) {
-
-    if (node == null) {
-      return false;
-    }
-
-    if (root.isLeaf() && root.getNumKeys() == 1 && root.containsKey(key)) {
-      root = null;
-      return true;
-    }
-
-
-    // preemptive merge
-    if (node.getNumKeys() == 1 && node.equals(root) == false) {
-      node = BTreeMerge(node);
-    }
-
-    int keyIndex = getKeyIndex(node, key);
-
-    // if the key isn't in the node, keep recurring down the tree
-    if (keyIndex == -1) {
-      if (key.compareTo(node.leftPair.getKey()) < 0) { // go to left child
-        return removeKey(node.getLeftChild(), key);
-
-        // go to the middle left child
-      } else if (node.getMidPair() == null || key.compareTo(node.getMidPair().getKey()) < 0) {
-        return removeKey(node.getMidLeftChild(), key);
-
-        // go to the middle right child
-      } else if (node.getRightPair() == null || key.compareTo(node.getRightPair().getKey()) < 0) {
-        return removeKey(node.getMidRightChild(), key);
-
-      } else { // go to right child
-        return removeKey(node.getRightChild(), key);
-      }
-    } else {
-      if (node.isLeaf()) {
-        removeKeyFromIndex(node, keyIndex);
-        return true;
-      } else {
-        BTreeNode tmpChild = getChild(node, keyIndex + 1);
-        Pair tmpKey = getMinKey(tmpChild);
-        removeKey(tmpKey.getKey());
-        keySwapPair(root, find(root, key), tmpKey);
-        return true;
-      }
-      
-    }
   }
 
   private Pair find(BTreeNode node, K key) {
@@ -702,7 +817,7 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
       parent = new BTreeNode(node.getMidPair(), splitLeft, splitRight);
       splitLeft.setParent(parent);
       splitRight.setParent(parent);
-      // tree.root = parent; //FIXME comment out if this doesn't fix it.
+
 
     }
 
@@ -1013,17 +1128,17 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
   private BTreeNode fuseRoot(BTreeNode root) {
     BTreeNode oldLeft = root.getLeftChild();
     BTreeNode oldMidLeft = root.getMidLeftChild();
-    
+
     root.setMidPair(root.getLeftPair());
     root.setLeftPair(oldLeft.getLeftPair());
     root.setRightPair(oldMidLeft.getLeftPair());
 
-    
+
     root.setLeftChild(oldLeft.getLeftChild());
     root.setMidLeftChild(oldLeft.getMidLeftChild());
     root.setMidRightChild(oldMidLeft.getLeftChild());
     root.setRightChild(oldMidLeft.getMidLeftChild());
-    
+
     return root;
   }
 
@@ -1120,20 +1235,19 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
    * @return the index (0-2) of the pair in the node, -1 otherwise
    */
   private int getKeyIndex(BTreeNode node, K key) {
-    // TODO remove these statements System.out.println("Here " + Math.random());
 
 
-    // System.out.println("Comparing " + key + " to " + node.getLeftPair().getKey());
+
     if (node.getLeftPair() != null && node.getLeftPair().getKey().equals(key)) {
       return 0;
     }
 
-    // System.out.println("Comparing " + key + " to " + node.getMidPair().getKey());
+
     if (node.getMidPair() != null && node.getMidPair().getKey().equals(key)) {
       return 1;
     }
 
-    // System.out.println("Comparing " + key + " to " + node.getRightPair().getKey());
+
     if (node.getRightPair() != null && node.getRightPair().getKey().equals(key)) {
       return 2;
     }
@@ -1202,46 +1316,6 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
 
     return false;
   }
-  
-  private List<V> getAllValues(BTreeNode current, List<V> valueList){
-    
-    
-    if (current != null) {
-      if (current.getNumChildren() == 1) {
-        getAllValues(current.getLeftChild(), valueList);
-      } else if (current.getNumChildren() == 2) {
-        getAllValues(current.getMidLeftChild(), valueList);
-        for (Pair p : current.getChildren()) {
-          if (p != null) {
-            valueList.add(p.getValue());
-          }
-        }
-        getAllValues(current.getLeftChild(), valueList);
-      } else if (current.getNumChildren() == 3) {
-        getAllValues(current.getMidRightChild(), valueList);
-        for (Pair p : current.getChildren()) {
-          if (p != null) {
-            valueList.add(p.getValue());
-          }
-        }
-        getAllValues(current.getMidLeftChild(), valueList);
-        getAllValues(current.getLeftChild(), valueList);
-      } else {
-        getAllValues(current.getRightChild(), valueList);
-        getAllValues(current.getMidRightChild(), valueList);
-        for (Pair p : current.getChildren()) {
-          if (p != null) {
-            valueList.add(p.getValue());
-          }
-        }
-        getAllValues(current.getMidLeftChild(), valueList);
-        getAllValues(current.getLeftChild(), valueList);
-      }
-    }
-    
-    
-    return valueList;
-  }
 
   public static void main(String[] args) {
     BTree<Integer, String> tree = new BTree<Integer, String>();
@@ -1265,11 +1339,21 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
     // tree.removeKey(19);
     // tree.removeKey(18);
     // tree.removeKey(17);
-    tree.removeKey(11);
-    tree.removeKey(15);
+    try {
+      tree.removeKey(11);
+    } catch (IllegalArgumentException | KeyNotFoundException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    try {
+      tree.removeKey(15);
+    } catch (IllegalArgumentException | KeyNotFoundException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
     // tree.removeKey(11);
     tree.printSideways();
-    
+
     System.out.println(tree.getAllValues());
 
   }

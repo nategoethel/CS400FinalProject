@@ -3,6 +3,7 @@ package application;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -15,8 +16,31 @@ import java.util.stream.Stream;
  *
  */
 public class Congress {
-  private static BTree<Integer, Legislator> congress = new BTree<Integer, Legislator>();
-  private static String filename = "legislators-current (1).csv"; // TODO pick the file
+  private static BTree<Integer, Legislator> congress;
+  private static String filename; // TODO pick the file
+
+
+  public Congress() {
+    Congress.congress = new BTree<Integer, Legislator>();
+    Congress.filename = "legislators-current (1).csv";
+    try {
+      parseCSV();
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+
+  public Congress(String filename) {
+    Congress.filename = filename;
+    Congress.congress = new BTree<Integer, Legislator>();
+    try {
+      parseCSV();
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
 
   /**
    * Parses the CSV file
@@ -44,17 +68,123 @@ public class Congress {
         Legislator legislator = new Legislator(firstName, lastName, gender, state, party, body);
 
         // insert into the tree
-        congress.addKey(
-            (legislator.getFirstName().hashCode() + legislator.getLastName().hashCode()),
-            legislator);
+        congress.addKey((legislator.getFirstName().toLowerCase().trim().hashCode()
+            + legislator.getLastName().toLowerCase().trim().hashCode()), legislator);
       }
 
-
+      csvScnr.close();
     } catch (FileNotFoundException e) {
       System.out.println("File not found.");
     }
 
+  }
 
+  /**
+   * Creates a new Legislator and adds it to the BTree
+   * 
+   * @param firstName
+   * @param lastName
+   * @param gender
+   * @param state
+   * @param party
+   * @param body
+   */
+  public boolean addLegislator(String firstName, String lastName, String gender, String state,
+      String party, String body) {
+
+    firstName.trim();
+    lastName.trim();
+    Legislator newLegislator = new Legislator(firstName, lastName, gender, state, party, body);
+    int key = firstName.hashCode() + lastName.hashCode();
+    int oldNumKeys = congress.getNumKeys();
+    congress.addKey(key, newLegislator);
+
+    if (congress.getNumKeys() == oldNumKeys + 1) {
+      return true;
+    }
+
+    return false;
+
+  }
+
+  /**
+   * Removes a legislator from the tree
+   * 
+   * @param firstName the legislator's first name
+   * @param lastName  the legislator's last name
+   * @return true if the legislator was removed, false otherwise
+   */
+  public boolean removeLegislator(String firstName, String lastName) {
+    firstName = firstName.toLowerCase().trim();
+    lastName = lastName.toLowerCase().trim();
+    // firstName.toLowerCase();
+    // firstName.trim();
+    // lastName.toLowerCase();
+    // lastName.trim();
+    int key = firstName.hashCode() + lastName.hashCode();
+    int oldNumKeys = congress.getNumKeys();
+
+    try {
+      congress.removeKey(key);
+    } catch (IllegalArgumentException | KeyNotFoundException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    if (congress.getNumKeys() == oldNumKeys - 1) {
+      return true;
+    }
+
+    return false;
+  }
+
+
+  public int getNumFemSenate() {
+    List<Legislator> allCongress = congress.getAllValues();
+
+    List<Legislator> femReps = allCongress.stream().filter(e -> e.getBody().equals("sen"))
+        .filter(e -> e.getGender().equals("F")).collect(Collectors.toList());
+
+    return femReps.size();
+  }
+
+
+  public int getNumMaleSenate() {
+    List<Legislator> allCongress = congress.getAllValues();
+
+    List<Legislator> femReps = allCongress.stream().filter(e -> e.getBody().equals("sen"))
+        .filter(e -> e.getGender().equals("M")).collect(Collectors.toList());
+
+    return femReps.size();
+  }
+
+  /**
+   * Returns the number of females in the House
+   * 
+   * @return the number of females in the House
+   */
+  public int getNumFemHouse() {
+
+    List<Legislator> allCongress = congress.getAllValues();
+
+    List<Legislator> femReps = allCongress.stream().filter(e -> e.getBody().equals("rep"))
+        .filter(e -> e.getGender().equals("F")).collect(Collectors.toList());
+
+    return femReps.size();
+  }
+
+  /**
+   * Returns the number of males in the House
+   * 
+   * @return the number of males in the House
+   */
+  public int getNumMaleHouse() {
+    List<Legislator> allCongress = congress.getAllValues();
+
+    List<Legislator> maleReps = allCongress.stream().filter(e -> e.getBody().equals("rep"))
+        .filter(e -> e.getGender().equals("M")).collect(Collectors.toList());
+
+    return maleReps.size();
   }
 
   /**
@@ -63,7 +193,7 @@ public class Congress {
    * @return a integer representing the percent of the Senate that is female, rounded.
    */
   public int getPercentFemaleSenate() {
-    
+
     int numFemSenators = 0;
 
     List<Legislator> senators = congress.getAllValues(); // get all legislators
@@ -78,13 +208,14 @@ public class Congress {
     return numFemSenators;
   }
 
+
   /**
    * Determines the percentage of senators that are male
    * 
    * @return a integer representing the percentage of senators who are male, rounded.
    */
   public int getPercentMaleSenate() {
-    
+
     int numMaleSenators = 0;
 
     List<Legislator> senators = congress.getAllValues(); // get all legislators
@@ -98,7 +229,7 @@ public class Congress {
 
     return numMaleSenators;
   }
-  
+
   /**
    * Determines the percentage of representatives that are female
    * 
@@ -107,19 +238,17 @@ public class Congress {
   public int getPercentFemaleHouse() {
     int percent = 0;
     Double numFemReps = 0.0;
-    
+
     List<Legislator> reps = congress.getAllValues();
-    List<Legislator> femReps = reps.stream()
-        .filter(e -> e.getBody().equals("rep"))
-        .filter(e -> e.getGender().equals("F"))
-        .collect(Collectors.toList());
-    
+    List<Legislator> femReps = reps.stream().filter(e -> e.getBody().equals("rep"))
+        .filter(e -> e.getGender().equals("F")).collect(Collectors.toList());
+
     numFemReps = 1.0 * femReps.size();
     percent = (int) ((numFemReps / 441) * 100); // 435 voting members + 6 non-voting members
-    
+
     return percent;
   }
-  
+
   /**
    * Determines the percentage of representatives that are male
    * 
@@ -128,78 +257,77 @@ public class Congress {
   public int getPercentMaleHouse() {
     int percent = 0;
     Double numMaleReps = 0.0;
-    
+
     List<Legislator> reps = congress.getAllValues();
-    List<Legislator> maleReps = reps.stream()
-        .filter(e -> e.getBody().equals("rep"))
-        .filter(e -> e.getGender().equals("M"))
-        .collect(Collectors.toList());
-    
+    List<Legislator> maleReps = reps.stream().filter(e -> e.getBody().equals("rep"))
+        .filter(e -> e.getGender().equals("M")).collect(Collectors.toList());
+
     numMaleReps = 1.0 * maleReps.size();
     percent = (int) ((numMaleReps / 441) * 100);
-    
+
     return percent;
   }
-  
+
   /**
    * Return the percentage of senators who are Democrats as a whole number
    * 
    * @return the percentage of Democratic senators
    */
   public int getPercentDemsSenate() {
-    
+
     return getNumDemsSenate();
   }
-  
+
   /**
    * Return the percentage of senators who are Republicans as a whole number
    * 
    * @return the percentage of Republican senators
    */
   public int getPercentRepsSenate() {
-    
+
     return getNumRepsSenate();
   }
-  
+
   /**
    * Return the percentage of senators who are Independents as a whole number
    * 
    * @return the percentage of Independent senators
    */
   public int getPercentIndsSenate() {
-    
+
     return getNumIndsSenate();
   }
-  
+
   /**
    * Return the percentage of representatives who are Democrats as a whole number
    * 
    * @return the percentage of Democratic representatives
    */
-  public int getPercentDemsHouse() {   
-    
+  public int getPercentDemsHouse() {
+
     return (getNumDemsHouse() * 100) / 441;
   }
-  
+
   /**
    * Return the percentage of representatives who are Republicans as a whole number
    * 
    * @return the percentage of Republican representatives
    */
   public int getPercentRepsHouse() {
-    
+
     return ((getNumRepsHouse() * 100) / 441);
   }
-  
+
   /**
    * Return the percentage of representatives who are Independents as a whole number
    * 
    * @return the percentage of Independent representatives
    */
   public int getPercentIndsHouse() {
-    
+
     return ((getNumIndsHouse() * 100) / 441);
   }
+
   /**
    * Returns the number of Democrats in the Senate
    * 
@@ -207,152 +335,171 @@ public class Congress {
    */
   public int getNumDemsSenate() {
     int num = 0;
-    
+
     List<Legislator> allCongress = congress.getAllValues();
-    List<Legislator> numDemsSenate = allCongress.stream()
-        .filter(e -> e.getBody().equals("sen"))
-        .filter(e -> e.getParty().equals("Democrat"))
-        .collect(Collectors.toList());
-    
+    List<Legislator> numDemsSenate = allCongress.stream().filter(e -> e.getBody().equals("sen"))
+        .filter(e -> e.getParty().equals("Democrat")).collect(Collectors.toList());
+
     num = numDemsSenate.size();
-    
+
     return num;
   }
-  
+
   /**
    * Returns the number of Republicans in the Senate
+   * 
    * @return
    */
   public int getNumRepsSenate() {
     int num = 0;
-    
+
     List<Legislator> allCongress = congress.getAllValues();
-    List<Legislator> numRepsSenate = allCongress.stream()
-        .filter(e -> e.getBody().equals("sen"))
-        .filter(e -> e.getParty().equals("Republican"))
-        .collect(Collectors.toList());
-    
+    List<Legislator> numRepsSenate = allCongress.stream().filter(e -> e.getBody().equals("sen"))
+        .filter(e -> e.getParty().equals("Republican")).collect(Collectors.toList());
+
     num = numRepsSenate.size();
-    
+
     return num;
   }
-  
+
   /**
    * Returns the number of Independents in the Senate
    * 
    * @return the number of Independents in the Senate
    */
   public int getNumIndsSenate() {
-    int num = 0; 
-    
+    int num = 0;
+
     List<Legislator> allCongress = congress.getAllValues();
-    List<Legislator> numIndsSenate = allCongress.stream()
-        .filter(e -> e.getBody().equals("sen"))
-        .filter(e -> e.getParty().equals("Independent"))
-        .collect(Collectors.toList());
-    
+    List<Legislator> numIndsSenate = allCongress.stream().filter(e -> e.getBody().equals("sen"))
+        .filter(e -> e.getParty().equals("Independent")).collect(Collectors.toList());
+
     num = numIndsSenate.size();
-    
+
     return num;
   }
-  
+
   /**
    * Returns the number of Democrats in the House
    * 
    * @return
    */
   public int getNumDemsHouse() {
-    int num = 0; 
-    
+    int num = 0;
+
     List<Legislator> allCongress = congress.getAllValues();
-    List<Legislator> numDemsHouse = allCongress.stream()
-        .filter(e -> e.getBody().equals("rep"))
-        .filter(e -> e.getParty().equals("Democrat"))
-        .collect(Collectors.toList());
-    
+    List<Legislator> numDemsHouse = allCongress.stream().filter(e -> e.getBody().equals("rep"))
+        .filter(e -> e.getParty().equals("Democrat")).collect(Collectors.toList());
+
     num = numDemsHouse.size();
-    
+
     return num;
   }
-  
+
   /**
    * Returns the number of Republicans in the House
    * 
    * @return
    */
   public int getNumRepsHouse() {
-    int num = 0; 
-    
+    int num = 0;
+
     List<Legislator> allCongress = congress.getAllValues();
-    List<Legislator> numRepsHouse = allCongress.stream()
-        .filter(e -> e.getBody().equals("rep"))
-        .filter(e -> e.getParty().equals("Republican"))
-        .collect(Collectors.toList());
-    
+    List<Legislator> numRepsHouse = allCongress.stream().filter(e -> e.getBody().equals("rep"))
+        .filter(e -> e.getParty().equals("Republican")).collect(Collectors.toList());
+
     num = numRepsHouse.size();
-    
+
     return num;
   }
-  
+
   /**
    * Returns the number of Independents in the House
    * 
    * @return the number of Independents in the House
    */
   public int getNumIndsHouse() {
-    int num = 0; 
-    
+    int num = 0;
+
     List<Legislator> allCongress = congress.getAllValues();
-    List<Legislator> numIndsHouse = allCongress.stream()
-        .filter(e -> e.getBody().equals("rep"))
-        .filter(e -> e.getParty().equals("Independent"))
-        .collect(Collectors.toList());
-    
+    List<Legislator> numIndsHouse = allCongress.stream().filter(e -> e.getBody().equals("rep"))
+        .filter(e -> e.getParty().equals("Independent")).collect(Collectors.toList());
+
     num = numIndsHouse.size();
-    
+
     return num;
   }
-  
-  public List<Legislator> getAllLegislators(){
-    
+
+  /**
+   * Get a list of all of the legislators in Congress
+   * 
+   * @return a list of Legislator objects
+   */
+  public List<Legislator> getAllLegislators() {
+
     return congress.getAllValues();
   }
 
-  public static void main(String[] args) {
-    try {
-      parseCSV();
-    } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+  /**
+   * Returns a list containing all of the names of all of the legislators
+   * 
+   * @return a list of strings that are the full names of all legislators
+   */
+  public List<String> getAllNames() {
+
+    List<Legislator> allLegislators = this.getAllLegislators();
+
+    List<String> names = new ArrayList<String>();
+
+    for (Legislator l : allLegislators) {
+      if (l != null) {
+        names.add(l.getFullName());
+      }
     }
 
-    Congress congress1 = new Congress();
+    names.sort(null);
+    return names;
+  }
+
+  public static void main(String[] args) {
+
+    Congress congress1 = new Congress("legislators-current (1).csv");
     System.out.println("Percent Female Senators: " + congress1.getPercentFemaleSenate());
     System.out.println("Percent Male Senators: " + congress1.getPercentMaleSenate());
-    
+
     System.out.println("Percent Female Reps: " + congress1.getPercentFemaleHouse());
     System.out.println("Percent Male Reps: " + congress1.getPercentMaleHouse());
-    
+
     System.out.println("Number of Democrats in the Senate: " + congress1.getNumDemsSenate());
-    System.out.println("Percentage of Democrats in the Senate: " + congress1.getPercentDemsSenate());
-    
+    System.out
+        .println("Percentage of Democrats in the Senate: " + congress1.getPercentDemsSenate());
+
     System.out.println("Number of Republicans in the Senate: " + congress1.getNumRepsSenate());
-    System.out.println("Percentage of Republicans in the Senate: " + congress1.getPercentRepsSenate());
-    
+    System.out
+        .println("Percentage of Republicans in the Senate: " + congress1.getPercentRepsSenate());
+
     System.out.println("Number of Independents in the Senate: " + congress1.getNumIndsSenate());
-    System.out.println("Percentage of Independents in the Senate: " + congress1.getPercentIndsSenate());
-    
+    System.out
+        .println("Percentage of Independents in the Senate: " + congress1.getPercentIndsSenate());
+
     System.out.println("Number of Democrats in the House: " + congress1.getNumDemsHouse());
     System.out.println("Percentage of Democrats in the House: " + congress1.getPercentDemsHouse());
-    
+
     System.out.println("Number of Republicans in the Hosue: " + congress1.getNumRepsHouse());
-    System.out.println("Percentage of Republicans in the House: " + congress1.getPercentRepsHouse());
-    
+    System.out
+        .println("Percentage of Republicans in the House: " + congress1.getPercentRepsHouse());
+
     System.out.println("Number of Independents in the House: " + congress1.getNumIndsHouse());
-    System.out.println("Percentage of Independents in the House: " + congress1.getPercentIndsHouse());
-    
+    System.out
+        .println("Percentage of Independents in the House: " + congress1.getPercentIndsHouse());
+
     System.out.println(congress.getAllValues().size());
     congress.printSideways();
+
+    System.out.println(congress1.getAllNames());
+
+
+    System.out.println(congress1.removeLegislator("Adam", "Schiff"));
 
 
   }
