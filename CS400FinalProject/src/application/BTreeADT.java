@@ -24,6 +24,7 @@ public interface BTreeADT<K, V> {
    * 
    * @param node
    * @throws IllegalArgumentException
+   * @throws KeyNotFoundException 
    */
   public void removeKey(K key) throws IllegalArgumentException, KeyNotFoundException;
 

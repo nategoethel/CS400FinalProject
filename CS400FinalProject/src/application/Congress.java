@@ -92,19 +92,36 @@ public class Congress {
   public boolean addLegislator(String firstName, String lastName, String gender, String state,
       String party, String body) {
 
-    firstName.trim();
-    lastName.trim();
-    Legislator newLegislator = new Legislator(firstName, lastName, gender, state, party, body);
-    int key = firstName.hashCode() + lastName.hashCode();
-    int oldNumKeys = congress.getNumKeys();
+    Legislator newLegislator =
+        new Legislator(firstName.trim(), lastName.trim(), gender, state, party, body);
+    int key = firstName.trim().toLowerCase().hashCode() + lastName.trim().toLowerCase().hashCode();
     congress.addKey(key, newLegislator);
 
-    if (congress.getNumKeys() == oldNumKeys + 1) {
+    if (congress.contains(key)) {
       return true;
     }
 
     return false;
 
+  }
+
+  /**
+   * Adds a legislator to the tree from an existing Legislator
+   * 
+   * @param l the Legislator object to add
+   * @return true if the Legislator was added successfully, false otherwise
+   */
+  public boolean addLegislator(Legislator l) {
+    int key = l.getFirstName().trim().toLowerCase().hashCode()
+        + l.getLastName().trim().toLowerCase().hashCode();
+
+    congress.addKey(key, l);
+
+    if (congress.contains(key)) {
+      return true;
+    }
+
+    return false;
   }
 
   /**
@@ -117,12 +134,7 @@ public class Congress {
   public boolean removeLegislator(String firstName, String lastName) {
     firstName = firstName.toLowerCase().trim();
     lastName = lastName.toLowerCase().trim();
-    // firstName.toLowerCase();
-    // firstName.trim();
-    // lastName.toLowerCase();
-    // lastName.trim();
     int key = firstName.hashCode() + lastName.hashCode();
-    int oldNumKeys = congress.getNumKeys();
 
     try {
       congress.removeKey(key);
@@ -131,11 +143,11 @@ public class Congress {
       e.printStackTrace();
     }
 
-    if (congress.getNumKeys() == oldNumKeys - 1) {
+    if (congress.contains(key)) {
+      return false;
+    } else {
       return true;
     }
-
-    return false;
   }
 
 
@@ -439,6 +451,26 @@ public class Congress {
 
     return congress.getAllValues();
   }
+  
+  /**
+   * Finds a specific legislator
+   * @param firstName the legislator's first name
+   * @param lastName the legislator's last name
+   * @return the Legislator if found, null otherwise.
+   */
+  public Legislator getLegislator(String firstName, String lastName) {
+    int key = firstName.trim().toLowerCase().hashCode() + lastName.trim().toLowerCase().hashCode();
+    
+    Legislator legislator = null;
+    try {
+      legislator = congress.findValue(key);
+    } catch (KeyNotFoundException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    
+    return legislator;
+  }
 
   /**
    * Returns a list containing all of the names of all of the legislators
@@ -459,48 +491,5 @@ public class Congress {
 
     names.sort(null);
     return names;
-  }
-
-  public static void main(String[] args) {
-
-    Congress congress1 = new Congress("legislators-current (1).csv");
-    System.out.println("Percent Female Senators: " + congress1.getPercentFemaleSenate());
-    System.out.println("Percent Male Senators: " + congress1.getPercentMaleSenate());
-
-    System.out.println("Percent Female Reps: " + congress1.getPercentFemaleHouse());
-    System.out.println("Percent Male Reps: " + congress1.getPercentMaleHouse());
-
-    System.out.println("Number of Democrats in the Senate: " + congress1.getNumDemsSenate());
-    System.out
-        .println("Percentage of Democrats in the Senate: " + congress1.getPercentDemsSenate());
-
-    System.out.println("Number of Republicans in the Senate: " + congress1.getNumRepsSenate());
-    System.out
-        .println("Percentage of Republicans in the Senate: " + congress1.getPercentRepsSenate());
-
-    System.out.println("Number of Independents in the Senate: " + congress1.getNumIndsSenate());
-    System.out
-        .println("Percentage of Independents in the Senate: " + congress1.getPercentIndsSenate());
-
-    System.out.println("Number of Democrats in the House: " + congress1.getNumDemsHouse());
-    System.out.println("Percentage of Democrats in the House: " + congress1.getPercentDemsHouse());
-
-    System.out.println("Number of Republicans in the Hosue: " + congress1.getNumRepsHouse());
-    System.out
-        .println("Percentage of Republicans in the House: " + congress1.getPercentRepsHouse());
-
-    System.out.println("Number of Independents in the House: " + congress1.getNumIndsHouse());
-    System.out
-        .println("Percentage of Independents in the House: " + congress1.getPercentIndsHouse());
-
-    System.out.println(congress.getAllValues().size());
-    congress.printSideways();
-
-    System.out.println(congress1.getAllNames());
-
-
-    System.out.println(congress1.removeLegislator("Adam", "Schiff"));
-
-
   }
 }

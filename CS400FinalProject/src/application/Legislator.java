@@ -1,5 +1,7 @@
 package application;
 
+import javafx.beans.property.Property;
+
 //////////////////// ALL ASSIGNMENTS INCLUDE THIS SECTION /////////////////////
 //
 // Title: Representation Tracker
@@ -78,7 +80,7 @@ public class Legislator {
   public String getFirstName() {
     return firstName;
   }
-
+  
   /**
    * TODO
    * 

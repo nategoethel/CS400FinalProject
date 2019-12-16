@@ -102,18 +102,32 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
       this.numKeys = 1;
     }
 
+    /**
+     * Gets the number of keys in the node
+     * @return the number of keys 
+     */
     public int getNumKeys() {
       return this.numKeys;
     }
 
+    /**
+     * Incremenets the number of keys in the node
+     */
     public void addNumKeys() {
       this.numKeys++;
     }
-    
+
+    /**
+     * Decrements the count of keys in the node
+     */
     public void removeNumKeys() {
       this.numKeys--;
     }
 
+    /**
+     * Gets the number of children
+     * @return the number of children
+     */
     public int getNumChildren() {
       int count = 0;
       ArrayList<BTreeNode> children = new ArrayList<BTreeNode>();
@@ -131,10 +145,20 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
       return count;
     }
 
+    /**
+     * Gets the left child
+     * 
+     * @return the left child
+     */
     public BTreeNode getLeftChild() {
       return leftChild;
     }
 
+    /**
+     * Sets the left child
+     * 
+     * @param child the child to set
+     */
     public void setLeftChild(BTreeNode child) {
       this.leftChild = child;
       if (child != null) {
@@ -142,10 +166,20 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
       }
     }
 
+    /**
+     * Gets the middle left child
+     * 
+     * @return the middle left child
+     */
     public BTreeNode getMidLeftChild() {
       return midLeftChild;
     }
 
+    /**
+     * Sets the middle left child
+     * 
+     * @param child the child to set
+     */
     public void setMidLeftChild(BTreeNode child) {
       this.midLeftChild = child;
       if (child != null) {
@@ -153,10 +187,20 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
       }
     }
 
+    /**
+     * Gets the middle right child
+     * 
+     * @return the middle right child
+     */
     public BTreeNode getMidRightChild() {
       return midRightChild;
     }
 
+    /**
+     * Sets the middle right child
+     * 
+     * @param child the child to set
+     */
     public void setMidRightChild(BTreeNode child) {
       this.midRightChild = child;
       if (child != null) {
@@ -164,10 +208,20 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
       }
     }
 
+    /**
+     * Gets the right child node
+     * 
+     * @return the right child node
+     */
     public BTreeNode getRightChild() {
       return rightChild;
     }
 
+    /**
+     * Sets the right child node
+     * 
+     * @param child the node to set
+     */
     public void setRightChild(BTreeNode child) {
       this.rightChild = child;
       if (child != null) {
@@ -175,38 +229,83 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
       }
     }
 
+    /**
+     * Gets the left pair
+     * 
+     * @return the left pair
+     */
     public Pair getLeftPair() {
       return leftPair;
     }
 
+    /**
+     * Sets the left pair
+     * 
+     * @param leftPair the pair to set
+     */
     public void setLeftPair(Pair leftPair) {
       this.leftPair = leftPair;
     }
 
+    /**
+     * Gets middle pair
+     * 
+     * @return the middle pair
+     */
     public Pair getMidPair() {
       return this.midPair;
     }
 
+    /**
+     * Sets the middle pair
+     * 
+     * @param midPair pair to set
+     */
     public void setMidPair(Pair midPair) {
       this.midPair = midPair;
     }
 
+    /**
+     * Get's the node's right pair
+     * 
+     * @return the node's right pair
+     */
     public Pair getRightPair() {
       return this.rightPair;
     }
 
+    /**
+     * Set's the node's right pair
+     * 
+     * @param rightPair the pair to set
+     */
     public void setRightPair(Pair rightPair) {
       this.rightPair = rightPair;
     }
 
+    /**
+     * Gets the node's parent
+     * 
+     * @return the node's parent
+     */
     public BTreeNode getParent() {
       return parent;
     }
 
+    /**
+     * Set's the node's parent
+     * 
+     * @param parent the node to set
+     */
     public void setParent(BTreeNode parent) {
       this.parent = parent;
     }
 
+    /**
+     * Checks if the node is full
+     * 
+     * @return true if so, false otherwise
+     */
     public boolean isFullNode() {
       if (this.getNumKeys() == 3) {
         return true;
@@ -214,6 +313,11 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
       return false;
     }
 
+    /**
+     * Checks whether the node is a leaf
+     * 
+     * @return true if so, false otherwise
+     */
     public boolean isLeaf() {
 
       if (this.getLeftChild() == null && this.getMidLeftChild() == null
@@ -264,6 +368,11 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
       return false;
     }
 
+    /**
+     * Gets the node's keys
+     * 
+     * @return the node's keys
+     */
     public List<K> getKeys() {
       ArrayList<K> keys = new ArrayList<K>();
       ArrayList<Pair> pairs = new ArrayList<Pair>();
@@ -280,6 +389,11 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
       return keys;
     }
 
+    /**
+     * Returns the node's children's pairs
+     * 
+     * @return the node's children's pairs
+     */
     public List<Pair> getChildren() {
       ArrayList<Pair> children = new ArrayList<Pair>();
 
@@ -306,18 +420,38 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
       this.value = value;
     }
 
+    /**
+     * Gets the key
+     * 
+     * @return the key
+     */
     public K getKey() {
       return key;
     }
 
+    /**
+     * Sets the key
+     * 
+     * @param key the key to set
+     */
     public void setKey(K key) {
       this.key = key;
     }
 
+    /**
+     * Gets the value
+     * 
+     * @return the value
+     */
     public V getValue() {
       return value;
     }
 
+    /**
+     * Sets the value
+     * 
+     * @param value the value to set
+     */
     public void setValue(V value) {
       this.value = value;
     }
@@ -356,11 +490,10 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
   /**
    * Private helper method for addKey() above.
    * 
-   * Implement as a left-leaning Red Black tree https://www.youtube.com/watch?v=9PiitpHLvRM
-   * 
-   * @param current
-   * @param value
-   * @return
+   * @param current the current node
+   * @param key     the key to add
+   * @param value   the value to add
+   * @return the newly added node
    */
   private BTreeNode addKey(BTreeNode current, K key, V value) {
 
@@ -407,7 +540,7 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
   }
 
   /**
-   * Removes a key/value pair from the tree
+   * Removes a key from the tree
    */
   @Override
   public void removeKey(K key) throws IllegalArgumentException, KeyNotFoundException {
@@ -415,13 +548,13 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
     if (key == null) {
       throw new IllegalArgumentException();
     }
-    
+
     if (contains(key) == false) {
       throw new KeyNotFoundException();
     }
 
     removeKey(root, key);
-  
+
   }
 
 
@@ -430,7 +563,7 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
    * 
    * @param node the node to start searching from
    * @param key  the key to search for
-   * @return the
+   * @return true if the key was removed, false otherwise
    */
   private boolean removeKey(BTreeNode node, K key) {
 
@@ -479,7 +612,7 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
         try {
           removeKey(tmpKey.getKey());
         } catch (IllegalArgumentException | KeyNotFoundException e) {
-          // TODO Auto-generated catch block
+   
           e.printStackTrace();
         }
         keySwapPair(root, find(root, key), tmpKey);
@@ -489,20 +622,49 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
     }
   }
 
+  /**
+   * Determines whether the tree contains a certain key
+   * 
+   * @param key the key to check for
+   * @return true if the key is already in the tree, false otherwise
+   */
   public boolean contains(K key) {
     List<K> keyList = this.getAllKeys();
-    
+
     if (keyList.contains(key)) {
       return true;
     }
-    
+
     return false;
   }
-  
+
+  /**
+   * Finds a value given a key
+   * 
+   * @param key the key of the key/value pair to search for
+   * @return the value associated with the key, null otherwise
+   * @throws KeyNotFoundException
+   */
+  public V findValue(K key) throws KeyNotFoundException {
+
+    if (contains(key) == false) {
+      throw new KeyNotFoundException();
+    }
+
+    V valueToReturn = null;
+    Pair foundPair = find(root, key);
+
+    if (foundPair != null) {
+      valueToReturn = foundPair.getValue();
+    }
+
+    return valueToReturn;
+  }
+
   /**
    * Returns a list of all of the objects in the tree.
    * 
-   * @return
+   * @return a list of all objects in the tree
    */
   public List<V> getAllValues() {
     List<V> valueList = new ArrayList<V>();
@@ -549,11 +711,23 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
     return valueList;
   }
 
+  /**
+   * Creates a list of all keys in the tree
+   * 
+   * @return a list of all keys
+   */
   public List<K> getAllKeys() {
     List<K> keyList = new ArrayList<K>();
     return getAllKeys(root, keyList);
   }
 
+  /**
+   * Private helper for getAllkeys() above
+   * 
+   * @param current the node to start from
+   * @param keyList a list of all of the keys in the tree
+   * @return a list of all keys in the tree
+   */
   private List<K> getAllKeys(BTreeNode current, List<K> keyList) {
     if (current != null) {
       if (current.getNumChildren() == 1) {
@@ -593,7 +767,7 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
   /**
    * Find the number of keys in the tree
    * 
-   * @return
+   * @return the number of keys in the tree
    */
   public int getNumKeys() {
     return numKeysTree;
@@ -639,6 +813,14 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
     }
   }
 
+  /**
+   * Adds a key to a leaf node
+   * 
+   * @param current the current node
+   * @param key     the key to add
+   * @param value   the value to add
+   * @return the new node, null otherwise
+   */
   private BTreeNode addKeyLeaf(BTreeNode current, K key, V value) {
 
     if (current.isEmpty()) {
@@ -693,6 +875,14 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
   }
 
 
+  /**
+   * Adds a key to an interior node
+   * 
+   * @param parent     the current node
+   * @param P          the pair to add
+   * @param leftChild  the left child node
+   * @param rightChild the right child node
+   */
   private void addKeyInterior(BTreeNode parent, Pair P, BTreeNode leftChild, BTreeNode rightChild) {
 
     // if the key is smaller than the parent's smallest key, push parent's keys to the right
@@ -725,6 +915,13 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
 
   }
 
+  /**
+   * finds a Pair with a given key
+   * 
+   * @param node the node to start searching from
+   * @param key  the key to find
+   * @return the Pair associated with the key, null otherwise
+   */
   private Pair find(BTreeNode node, K key) {
 
 
@@ -782,7 +979,7 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
    * Moves a key from the given node to the parent and moves a key from the parent to the node's
    * sibling.
    * 
-   * @param node
+   * @param node the node to rotate
    */
   private void rightRotate(BTreeNode node) {
 
@@ -794,10 +991,11 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
   }
 
   /**
+   * Splits a node
    * 
-   * @param tree
-   * @param node
-   * @return
+   * @param tree the tree that holds the node
+   * @param node the node to split
+   * @return the new node created by the splits
    */
   private BTreeNode BTreeSplit(BTree<K, V> tree, BTreeNode node) {
 
@@ -992,9 +1190,9 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
   /**
    * Get the key/pair in the parent that is immediately to the right of the child node
    * 
-   * @param parent
-   * @param child
-   * @return
+   * @param parent the parent node
+   * @param child  the child node
+   * @return the pair to the right of child
    */
   private Pair getParentKeyOfRightChild(BTreeNode parent, BTreeNode child) {
     // if the child is the right child, return null
@@ -1023,9 +1221,9 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
   /**
    * Sets the key in the parent node that is immediately right of the child node
    * 
-   * @param parent
-   * @param child
-   * @param p
+   * @param parent the parent node
+   * @param child  the child node
+   * @param p      the pair to set
    */
   private void setParentKeyOfRightChild(BTreeNode parent, BTreeNode child, Pair p) {
 
@@ -1123,7 +1321,7 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
   /**
    * Performs a fusion on the root node
    * 
-   * @param node
+   * @param node the node to fuse
    */
   private BTreeNode fuseRoot(BTreeNode root) {
     BTreeNode oldLeft = root.getLeftChild();
@@ -1145,8 +1343,8 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
   /**
    * Fuses two non-root nodes together
    * 
-   * @param node1
-   * @param node2
+   * @param node1 the first node to fuse
+   * @param node2 the second node to fuse
    */
   private BTreeNode fuse(BTreeNode node1, BTreeNode node2) {
     BTreeNode parent = node1.getParent();
@@ -1204,7 +1402,7 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
    * 
    * @param node
    * @param index
-   * @return
+   * @return the child node
    */
   private BTreeNode getChild(BTreeNode node, int index) {
 
@@ -1293,6 +1491,14 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
 
   }
 
+  /**
+   * Swaps keys between two nodes
+   * 
+   * @param node     node to swap pairs
+   * @param currPair old pair to swap
+   * @param newPair  new pair
+   * @return true if the swap was successful, false otherwise
+   */
   private boolean keySwapPair(BTreeNode node, Pair currPair, Pair newPair) {
     if (node == null) {
       return false;
@@ -1315,46 +1521,5 @@ public class BTree<K extends Comparable<K>, V> implements BTreeADT<K, V> {
     }
 
     return false;
-  }
-
-  public static void main(String[] args) {
-    BTree<Integer, String> tree = new BTree<Integer, String>();
-    tree.addKey(10, "Ten");
-    tree.addKey(12, "Twelve");
-    tree.addKey(11, "Eleven");
-    tree.addKey(13, "Thirteen");
-    tree.addKey(14, "Fourteen");
-    tree.addKey(15, "Fifteen");
-    tree.addKey(9, "Nine");
-    tree.addKey(17, "Seventeen");
-    tree.addKey(8, "Eight");
-    tree.addKey(7, "Seven");
-    tree.addKey(18, "Eighteen");
-    tree.addKey(19, "Nineteen");
-    // System.out.println(tree.getNumKeys());
-    System.out.println("The tree after adding keys");
-    tree.printSideways();
-
-    System.out.println("The tree after removing 19");
-    // tree.removeKey(19);
-    // tree.removeKey(18);
-    // tree.removeKey(17);
-    try {
-      tree.removeKey(11);
-    } catch (IllegalArgumentException | KeyNotFoundException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    try {
-      tree.removeKey(15);
-    } catch (IllegalArgumentException | KeyNotFoundException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    // tree.removeKey(11);
-    tree.printSideways();
-
-    System.out.println(tree.getAllValues());
-
   }
 }
